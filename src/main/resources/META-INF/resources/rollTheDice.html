@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dice Roller</title>
+    <style>
+        .dice {
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+
+        .dice-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 1s ease-in-out;
+            width: 100%;
+            height: 100%;
+        }
+
+        .rolling {
+            animation: rollAnimation 1s ease-in-out;
+        }
+
+        @keyframes rollAnimation {
+            0% {
+                transform: rotate(0);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="rollTheDice.css" />
+</head>
+<body>
+<button onclick="rollDice()">Roll the Dice</button>
+<div id="dice" class="dice">
+    <img id="diceImage" class="dice-image" src="dice.png" alt="Dice" />
+</div>
+</body>
+<script>
+    var rClient = null;
+
+    function rollDice() {
+        var diceElement = document.getElementById("dice");
+        diceElement.classList.add("rolling"); // Add a CSS class for rolling animation
+
+        setTimeout(function() {
+            diceElement.classList.remove("rolling"); // Remove the rolling animation class
+            rollResult();
+        }, 1000);
+    }
+
+    async function rollResult() {
+        rClient = generateString();
+
+
+        var requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Add any other required headers
+            },
+            body: JSON.stringify({
+                "value": rClient
+            })
+        };
+
+        try {
+            fetch("http://localhost:8080/dice-game/start-game", requestOptions)
+                //const data = await response.json()
+                .then(async response => {
+                    //handle response
+                    console.log(response);
+                    const isJson = response.headers.get('content-type')?.includes('application/json');
+                    const data = isJson && await response.json();
+                    //let data=response.json();
+                    if (response.status == 200) {
+                        //alert("Received response from server: " + data.hash);
+                        serverHash = data.value;
+                        // Roll the dice after receiving the response
+                        await rollDiceResult();
+                    } else {
+                        alert("Something went wrong...");
+                    }
+                })
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    function generateString() {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < 10) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
+            console.log(result);
+        }
+        return result;
+    }
+
+    function rollDiceResult() {
+        diceResult = Math.floor(Math.random() * 6) + 1; // Store the result in the variable
+        var diceImageElement = document.getElementById("diceImage");
+        diceImageElement.src = "dice-" + diceResult + ".png";
+        console.log("Dice roll result: " + diceResult);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'// Add any other required header
+            },
+            body: JSON.stringify({
+                "diceNumber": diceResult
+            })
+        };
+
+        fetch("http://localhost:8080/dice-game/sendDiceOfClient", requestOptions)
+            .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson && await response.json();
+                let str = ''.concat(data.diceResult,data.rServer,rClient);
+                const utf8 = new TextEncoder().encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray
+                    .map((bytes) => bytes.toString(16).padStart(2, '0'))
+                    .join('');
+                //await hash(str).then((hex) => myHash = hex);
+                console.log(data.diceResult);
+                console.log(data.rServer);
+                console.log(rClient);
+                console.log(hashHex);
+                console.log(serverHash);
+                console.log(response.status);
+                if ((response.status == 200)&&(hashHex==serverHash)) {
+                    setTimeout(() => {  alert("YOU " + data.condition + " Server got "+data.diceResult+" (His random string was "+data.rServer+")"); }, 300);
+                    //alert("You are a "+data.status+" Server got "+data.diceResult+" (His random string was "+data.rs+")");
+                    //console.log(str);
+                } else {
+                    alert("Something went wrong...");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+
+    }
+</script>
+</html>

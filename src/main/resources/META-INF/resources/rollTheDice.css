@@ -1,0 +1,27 @@
+.dice {
+    width: 200px;
+    height: 200px;
+    position: relative;
+}
+
+.dice-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 1s ease-in-out;
+    width: 100%;
+    height: 100%;
+}
+
+.rolling {
+    animation: rollAnimation 1s ease-in-out;
+}
+
+@keyframes rollAnimation {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

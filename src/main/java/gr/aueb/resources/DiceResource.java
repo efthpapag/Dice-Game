@@ -2,16 +2,13 @@ package gr.aueb.resources;
 
 import gr.aueb.domain.Dice;
 import gr.aueb.representation.AnswerRepresentation;
+import gr.aueb.representation.DiceNumberRepresentation;
+import gr.aueb.representation.StringRepresentation;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import gr.aueb.representation.StringRepresentation;
-import gr.aueb.representation.DiceNumberRepresentation;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -22,43 +19,49 @@ public class DiceResource {
     @Inject
     Dice dice;
 
-    @POST
+    @GET
     @Path("/start-game")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response startGame(StringRepresentation rClientRepresentation) throws NoSuchAlgorithmException {
-
-        System.out.println(rClientRepresentation);
-        dice.setRClient(rClientRepresentation.value);
+    public Response startGame() throws NoSuchAlgorithmException {
 
         dice.rollDice();
 
         dice.createRandomString();
 
-        dice.createHash();
-        System.out.println(dice.getDiceResult());
-        System.out.println(dice.getRServer());
-        System.out.println(dice.getRClient());
-
-        StringRepresentation hashValue = new StringRepresentation();
-        hashValue.value = dice.getServerHash();
-
-        return Response.ok().entity(hashValue).build();
+        return Response.ok().build();
     }
 
     @POST
-    @Path("/sendDiceOfClient")
+    @Path("/sendRClient")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sendDiceOfClient(DiceNumberRepresentation diceClientRepresentation) {
+    public Response calculateCommit(StringRepresentation RClient) throws NoSuchAlgorithmException {
+        dice.setRClient(RClient.value);
+        dice.createHash();
+        StringRepresentation commit = new StringRepresentation();
+        commit.value = dice.getServerHash();
+        return Response.ok().entity(commit).build();
+    }
+
+    @POST
+    @Path("/determinewinner")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response determineWinner(DiceNumberRepresentation diceClientRepresentation) {
         AnswerRepresentation answerRepresentation = new AnswerRepresentation();
-        if(diceClientRepresentation.diceNumber > dice.getDiceResult()) {
+        /*if(diceClientRepresentation.diceNumber > dice.getDiceResult()) {
             answerRepresentation.condition = "WON";
         }
         else if(diceClientRepresentation.diceNumber < dice.getDiceResult()) {
             answerRepresentation.condition = "LOST";
         }
-        else {answerRepresentation.condition = "TIED";}
+        else {answerRepresentation.condition = "TIED";}*/
+
+        if(diceClientRepresentation.diceNumber == dice.getDiceResult()) {
+            answerRepresentation.condition = "WON";
+        }
+        else {
+            answerRepresentation.condition = "LOST";
+        }
 
         answerRepresentation.diceResult = dice.getDiceResult();
         answerRepresentation.rServer = dice.getRServer();

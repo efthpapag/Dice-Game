@@ -67,7 +67,7 @@
         };
 
         try {
-            fetch("http://localhost:8080/dice-game/start-game", requestOptions)
+            fetch("https://localhost:8443/dice-game/start-game", requestOptions)
                 //const data = await response.json()
                 .then(async response => {
                     //handle response
@@ -118,7 +118,7 @@
             })
         };
 
-        fetch("http://localhost:8080/dice-game/sendRClient", requestOptions)
+        fetch("https://localhost:8443/dice-game/sendRClient", requestOptions)
             .then(async response => {
                 const isJson = response.headers.get('content-type')?.includes('application/json');
                 const data = isJson && await response.json();
@@ -157,7 +157,7 @@
                 })
             };
 
-            fetch("http://localhost:8080/dice-game/determinewinner", requestOptions)
+            fetch("https://localhost:8443/dice-game/determinewinner", requestOptions)
                 .then(async response => {
                     const isJson = response.headers.get('content-type')?.includes('application/json');
                     const data = isJson && await response.json();

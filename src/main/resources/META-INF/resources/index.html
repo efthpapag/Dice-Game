@@ -62,8 +62,8 @@
               const data = isJson && await response.json();
               if(response.status === 200){
 
-                //var jwt = data.jwt;
-                //sessionStorage.setItem("jwt", jwt);
+                var jwt = data.value;
+                sessionStorage.setItem("jwt", jwt);
                 window.location = "https://localhost:8443/rollTheDice.html";
               }else{
                 alert("Check your credentials");

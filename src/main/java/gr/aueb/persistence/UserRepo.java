@@ -6,4 +6,8 @@ import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class UserRepo implements PanacheRepositoryBase<User, String> {
+
+    public User findByUsername(String username) {
+        return find("username", username).firstResult();
+    }
 }

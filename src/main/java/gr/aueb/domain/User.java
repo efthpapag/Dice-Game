@@ -19,19 +19,22 @@ public class User {
     @Id
     @Username
     @NotNull
-    @Pattern(regexp = "[a-zA-Z0-9_-]+")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
     @Column(name = "username", length = 20, unique = true)
     public String username;
 
     @NotNull
     @Password
-    @Column(name = "password")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
+    @Column(name = "password", length = 60)
     public String password;
 
-    @Column(name = "firstname")
+    @Column(name = "firstname", length = 60)
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
     private String firstName;
 
-    @Column(name = "lastname")
+    @Column(name = "lastname", length = 60)
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$")
     private String lastName;
 
     public User() {}

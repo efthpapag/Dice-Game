@@ -1,5 +1,9 @@
 package gr.aueb.domain;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.security.jpa.Password;
+import io.quarkus.security.jpa.UserDefinition;
+import io.quarkus.security.jpa.Username;
 import io.smallrye.common.constraint.NotNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,15 +13,18 @@ import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "users")
+//@UserDefinition
 public class User {
 
     @Id
+    @Username
     @NotNull
     @Pattern(regexp = "[a-zA-Z0-9_-]+")
     @Column(name = "username", length = 20, unique = true)
     public String username;
 
     @NotNull
+    @Password
     @Column(name = "password")
     public String password;
 
@@ -31,7 +38,7 @@ public class User {
 
     public User(String username, String password, String firstName, String lastName) {
         this.username = username;
-        this.password = password;
+        this.password = BcryptUtil.bcryptHash(password);
         this.firstName = firstName;
         this.lastName = lastName;
     }

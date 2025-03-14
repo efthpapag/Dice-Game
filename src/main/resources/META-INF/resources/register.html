@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Dice Game</title>
+  <title>Dice Game Registration</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="register.css" />
 </head>
 <body>
 <header id="header">
   <nav class="right">
-    <a href="register.html" class="button alt">Sign-up</a>
+    <a href="index.html" class="button alt">Login</a>
   </nav>
 </header>
 <section id="banner">
   <div class="content">
-    <form id="login" class="needs-validation" novalidate>
+    <form id="registrationform" class="needs-validation" novalidate>
+      <label class="form-label" for="firstName">First Name</label>
+      <input type="text" id="firstName"><br>
+      <label class="form-label" for="lastName">Last Name</label>
+      <input type="text" id="lastName"><br>
       <label class="form-label" for="username">Username</label>
-      <input type="text" id="username" class="form-control"/><br>
+      <input type="text" id="username"><br>
       <label class="form-label" for="password">Password</label>
-      <input type="password" id="password" class="form-control"/><br>
-      <button type="submit" onclick="onClickSubmit()">Log in</button>
+      <input type="password" id="password"><br>
+      <input type="submit" onclick="onClickSubmit2()" value="Submit">
     </form>
   </div>
 </section>
-</body>
 <script>
   // Fetch the login form
   var form = document.querySelector('form.needs-validation');
@@ -40,9 +43,11 @@
 
     form.classList.add('was-validated');
   });
-  function onClickSubmit(){
+  function onClickSubmit2(){
     let username = document.getElementById('username');
     let password = document.getElementById('password');
+    let firstName = document.getElementById('firstName');
+    let lastName = document.getElementById('lastName');
     var myHeaders = new Headers()
     myHeaders.append("Accept", "*/*")
     myHeaders.append("Content-type", "application/json")
@@ -53,22 +58,22 @@
       headers: myHeaders,
       body: JSON.stringify({
         "username": username.value,
-        "password": password.value
+        "password": password.value,
+        "firstName": firstName.value,
+        "lastName": lastName.value
       })
     };
-    fetch("https://localhost:8443/users/login", requestOptions)
+    fetch("https://localhost:8443/users/register", requestOptions)
             .then(async response => {
               const isJson = response.headers.get('content-type')?.includes('application/json');
-              const data = isJson && await response.json();
-              if(response.status === 200){
-
-                //var jwt = data.jwt;
-                //sessionStorage.setItem("jwt", jwt);
-                window.location = "https://localhost:8443/rollTheDice.html";
+              if(response.status === 201){
+                alert("Successful registration");
+                window.location = "https://localhost:8443/index.html";
               }else{
-                alert("Check your credentials");
+                alert("Invalid credentials");
               }
             })
   }
 </script>
+</body>
 </html>

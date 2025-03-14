@@ -121,6 +121,15 @@
             <artifactId>quarkus-jdbc-postgresql</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-security-jpa</artifactId>
+            <version>3.16.0.CR1</version>
+        </dependency>
 
 
     </dependencies>

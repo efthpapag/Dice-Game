@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -19,6 +20,9 @@ public class DiceResource {
     @Inject
     Dice dice;
 
+    @Inject
+    JsonWebToken jwt;
+
     @GET
     @Path("/start-game")
     public Response startGame() throws NoSuchAlgorithmException {
@@ -26,6 +30,8 @@ public class DiceResource {
         dice.rollDice();
 
         dice.createRandomString();
+
+        System.out.println(jwt.getSubject());
 
         return Response.ok().build();
     }

@@ -48,7 +48,7 @@ public class UserResource {
             StringRepresentation res = new StringRepresentation();
             res.value=jwt;
             return Response.ok().entity(res).build();
-            //return Response.ok().build();
+
         }else{
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }

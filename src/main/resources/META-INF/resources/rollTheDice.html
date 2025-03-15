@@ -43,6 +43,7 @@
     var rClient = null;
     var commit = null;
     var input = null;
+    var jwt = sessionStorage.getItem("jwt");
 
     function startGame() {
         var diceElement = document.getElementById("dice");
@@ -62,23 +63,22 @@
         var requestOptions = {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json' // Add any other required headers
+                'Content-Type': 'application/json', // Add any other required headers
+                Authorization : 'Bearer ' + jwt
             }
         };
 
         try {
             fetch("https://localhost:8443/dice-game/start-game", requestOptions)
-                //const data = await response.json()
+
                 .then(async response => {
                     //handle response
                     console.log(response);
-                    //const isJson = response.status;
-                    //const data = isJson && await response.json();
-                    //let data=response.json();
+
                     if (response.status === 200) {
                         //alert("Received response from server: " + data.hash);
-                        //serverHash = data.value;
-                        // Roll the dice after receiving the response
+
+
                         await sendRClient();
                     } else {
                         alert("Something went wrong...");
@@ -97,21 +97,18 @@
         while (counter < 10) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
             counter += 1;
-            console.log(result);
+            //console.log(result);
         }
         return result;
     }
 
     function sendRClient() {
-        /*diceResult = Math.floor(Math.random() * 6) + 1; // Store the result in the variable
-        var diceImageElement = document.getElementById("diceImage");
-        diceImageElement.src = "dice-" + diceResult + ".png";
-        console.log("Dice roll result: " + diceResult);*/
 
         var requestOptions = {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'// Add any other required header
+                'Content-Type': 'application/json',// Add any other required header
+                Authorization : 'Bearer' + jwt
             },
             body: JSON.stringify({
                 "value": rClient
@@ -150,7 +147,8 @@
             var requestOptions = {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'// Add any other required header
+                    'Content-Type': 'application/json',// Add any other required header
+                    Authorization : 'Bearer' + jwt
                 },
                 body: JSON.stringify({
                     "diceNumber": input
@@ -169,19 +167,18 @@
                     const hashHex = hashArray
                         .map((bytes) => bytes.toString(16).padStart(2, '0'))
                         .join('');
-                    //await hash(h2).then((hex) => myHash = hex);
-                    console.log(data.diceResult);
-                    console.log(data.rServer);
-                    console.log(rClient);
-                    console.log(hashHex);
-                    console.log(commit);
-                    console.log(response.status);
+
+                    //console.log(data.diceResult);
+                    //console.log(data.rServer);
+                    //console.log(rClient);
+                    //console.log(hashHex);
+                    //console.log(commit);
+                    //console.log(response.status);
                     if ((response.status === 200)&&(hashHex === commit)) {
                         var diceImageElement = document.getElementById("diceImage");
                         diceImageElement.src = "dice-" + data.diceResult + ".png";
                         setTimeout(() => {  alert("YOU " + data.condition + " Server got " + data.diceResult+" (His random string was " + data.rServer + ")"); }, 300);
-                        //alert("You are a "+data.status+" Server got "+data.diceResult+" (His random string was "+data.rs+")");
-                        //console.log(h2);
+
                     } else {
                         alert("Something went wrong...");
                     }

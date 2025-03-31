@@ -58,6 +58,9 @@
         let jwt = data.value;
         sessionStorage.setItem("jwt", jwt); // Store token
         window.location.href = "https://localhost:8443/rollTheDice.html"; // Redirect
+      }
+      else if (response.status === 410){
+        alert("Too many attempts. Account deleted");
       } else {
         alert("Invalid credentials. Please try again.");
       }

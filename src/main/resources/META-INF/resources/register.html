@@ -23,6 +23,17 @@
       <input type="text" id="username"><br>
       <label class="form-label" for="password">Password</label>
       <input type="password" id="password"><br>
+      <div class="password-rules">
+        Password must contain:
+        <ul>
+          <li>At least one uppercase letter</li>
+          <li>At least one lowercase letter</li>
+          <li>At least one special character (@, #, $, %, ^, &, +, =, !)</li>
+          <li>At least 8 characters in length</li>
+        </ul>
+      </div>
+      <label class="form-label" for="password2">Confirm Password</label>
+      <input type="password" id="password2"><br>
       <input type="submit" onclick="onClickSubmit2()" value="Submit">
     </form>
   </div>
@@ -41,8 +52,16 @@
   function onClickSubmit2(){
     let username = document.getElementById('username');
     let password = document.getElementById('password');
+    let password2 = document.getElementById('password2');
     let firstName = document.getElementById('firstName');
     let lastName = document.getElementById('lastName');
+    console.log(password.value)
+    console.log(password2.value)
+    if (password.value !== password2.value){
+      alert("Password and Password Confirmation do not match");
+      return;
+    }
+
     var myHeaders = new Headers()
     myHeaders.append("Accept", "*/*")
     myHeaders.append("Content-type", "application/json")
@@ -61,11 +80,12 @@
     fetch("https://localhost:8443/users/register", requestOptions)
             .then(async response => {
               const isJson = response.headers.get('content-type')?.includes('application/json');
+              const message = await response.text();
               if(response.status === 201){
                 alert("Successful registration");
                 window.location = "https://localhost:8443/index.html";
               }else{
-                alert("Invalid credentials");
+                alert(message);
               }
             })
   }

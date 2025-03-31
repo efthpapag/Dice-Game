@@ -31,8 +31,6 @@ public class DiceResource {
 
         dice.createRandomString();
 
-        System.out.println(jwt.getSubject());
-
         return Response.ok().build();
     }
 
